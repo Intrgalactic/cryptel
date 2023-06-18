@@ -29,7 +29,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/app/build', 'index.html'));
 });
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
 
 app.post('/create-user',createUser);
 

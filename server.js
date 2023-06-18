@@ -40,5 +40,4 @@ app.get('/api/prices',getPrices);
 
 app.get('/api/user-data',userData);
 
-app.post('')
 app.listen(process.env.PORT || 8000);

@@ -4,15 +4,19 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const User = require('./models/user.model.js');
 const path = require('path');
-const uri = "mongodb+srv://mateusz:JVlBS0eSCfTtxN6V@cluster0.5bp3dmm.mongodb.net/";
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
+const cors = require('cors');
 const {userData,createUser,deleteUser,findUser} = require('./controllers/usersController.js');
 const {getPrices} = require('./controllers/priceController.js');
-
+const corsOptions = {
+    origin: "https://client-t6py.onrender.com/",
+    optionsSuccessStatus: 200
+}
+dotenv.config();
 async function connectToDb() {
     try {
-        await mongoose.connect(uri);
+        await mongoose.connect(process.env.MONGO_URL);
         console.log("Connected");
     }
     catch (err) {
@@ -22,22 +26,19 @@ async function connectToDb() {
 
 connectToDb();
 
-dotenv.config();
-app.use(express.static(path.join(__dirname, "../build")));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../build', 'index.html'));
-});
+
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors());
 
-app.post('/create-user',createUser);
+app.get('/create-user',cors(corsOptions),createUser);
 
-app.get('/user',findUser);
+app.get('/user',cors(corsOptions),findUser);
 
-app.delete("/delete-user",deleteUser);
+app.delete("/delete-user",cors(corsOptions),deleteUser);
 
-app.get('/api/prices',getPrices);
+app.get('/api/prices',cors(corsOptions),getPrices);
 
-app.get('/api/user-data',userData);
+app.get('/api/user-data',cors(corsOptions),userData);
 
 app.listen(process.env.PORT || 8000);

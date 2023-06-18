@@ -4,7 +4,7 @@
       "paths": {
         "components/*": ["src/components/*"],
         "assets/*": ["src/assets/*"],
-
+        "build/*" : ["./build/*"]
       }
     },
     "exclude": ["node_modules","build"] 

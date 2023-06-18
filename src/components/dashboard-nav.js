@@ -5,7 +5,7 @@ import { logOut } from "utils/utilities.js";
 export function DashboardNav({wallet,redirect}) {
     return (
         <nav id="dashboard-navigation">
-            <Link to='/dashboard'><img src={logo} /></Link>
+            <Link to='/dashboard'><img src={logo} alt="company logo"/></Link>
             {typeof(wallet) !== 'undefined' ?<Link to={`/${redirect}`}>{redirect}</Link> : null}
             <Link to='/market'>Market</Link>
             <Link to='/launchpad'>Launchpad</Link>

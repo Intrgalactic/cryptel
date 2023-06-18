@@ -6,8 +6,6 @@ import { EmailAuthProvider } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
-import { useReducer } from "react";
-import { settingsReducer } from "utils/utilities";
 import { fetchURL } from "config";
 export default function Settings() {
     const navigate = useNavigate();

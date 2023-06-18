@@ -1,7 +1,5 @@
 import { OperationBox } from "components/operation-box";
 import { OperationBoxesSection } from "components/operation-boxes-section";
-import { auth } from "firebase.js";
-import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import balanceIcon from 'assets/images/portfolio-balance-cash.png';
 import { Chart } from 'react-google-charts';
@@ -25,8 +23,8 @@ export default function Dashboard({wallet}) {
     const [newestCryptoArticle, setNewestCryptoArticle] = useState({});
     const [pnl, setPnl] = useState([]);
     const [profit, setProfit] = useState();
-    useMemo(() => { getFormattedDates(formattedDates) },[formattedDates]);
-
+    useMemo(() => { getFormattedDates(formattedDates); },[formattedDates]);
+  
     const arrangementOptions = {
         colors: ['#FFB200', "#5D60FA", "#16D509", '#6F09D5'],
         legend: { position: 'right', textStyle: { color: 'black', fontSize: 15 }, alignment: "center" },
@@ -49,8 +47,6 @@ export default function Dashboard({wallet}) {
 
     }
     function handleSpaceChange(space, interval) {
-        ;
-
         let dataArr = [];
         let goodPriceWithDatesArr = [[interval, "BTC"]];
         let it = 0;
@@ -82,11 +78,11 @@ export default function Dashboard({wallet}) {
     }
     isAuthenticated(navigate);
     useEffect(() => {
-        new Promise(async (resolve, reject) => {
+        new Promise((resolve, reject) => {
             try {
-                await fetchUrl(`${encodeURI("https://newsdata.io/api/1/news?apikey=pub_246317184937fe6b0f1944b98a708d1a0e08d&q=bitcoin&country=us&language=en&category=business ")}`, getArticle);
-                await fetchUrl(`${fetchURL}/api/prices`, getPrices);
-                await fetchUrl(`${fetchURL}/api/user-data`, getUserData);
+               fetchUrl(`${encodeURI("https://newsdata.io/api/1/news?apikey=pub_246317184937fe6b0f1944b98a708d1a0e08d&q=bitcoin&country=us&language=en&category=business ")}`, getArticle);
+               fetchUrl(`${fetchURL}/api/user-data`, getUserData);
+               fetchUrl(`${fetchURL}/api/prices`,getPrices);
             }
             catch (err) {
                 console.log('failed to fetch');
@@ -94,70 +90,71 @@ export default function Dashboard({wallet}) {
             }
             resolve("fetched");
         });
-    }, []);
-    async function getArticle(data) {
-        setNewestCryptoArticle({
-            title: data.results[0].title,
-            description: data.results[0].description,
-            link: data.results[0].link,
-            image: data.results[0].image_url
-        });
-    }
-    async function getPrices(data) {
-        var goodPricesArr = [];
-        var goodPricesDateArr = [];
-        var dateIterator = formattedDates.length - 1;
-        for (const [key, value] of Object.entries(data)) {
-            for (const [pricesArrKey, pricesArrValue] of Object.entries(value))
-                if (pricesArrKey === "btc") {
-                    goodPricesArr.push(pricesArrValue);
+        async function getArticle(data) {
+            setNewestCryptoArticle({
+                title: data.results[0].title,
+                description: data.results[0].description,
+                link: data.results[0].link,
+                image: data.results[0].image_url
+            });
+        }
+        async function getPrices(data) {
+            var goodPricesArr = [];
+            var goodPricesDateArr = [];
+            var dateIterator = formattedDates.length - 1;
+            for (const [, value] of Object.entries(data)) {
+                for (const [pricesArrKey, pricesArrValue] of Object.entries(value))
+                    if (pricesArrKey === "btc") {
+                        goodPricesArr.push(pricesArrValue);
+                    }
+            }
+            for (let i = goodPricesArr.length - 1; i >= 0; i--) {
+                let oneWeekPriceDateArr = [];
+                for (let j = goodPricesArr[0].length - 1; j >= 0; j--) {
+                    oneWeekPriceDateArr.push([formattedDates[dateIterator], goodPricesArr[i][j]]);
+                    dateIterator--;
                 }
-        }
-        for (let i = goodPricesArr.length - 1; i >= 0; i--) {
-            let oneWeekPriceDateArr = [];
-            for (let j = goodPricesArr[0].length - 1; j >= 0; j--) {
-                oneWeekPriceDateArr.push([formattedDates[dateIterator], goodPricesArr[i][j]]);
-                dateIterator--;
+                oneWeekPriceDateArr.reverse();
+                goodPricesDateArr.push(oneWeekPriceDateArr);
             }
-            oneWeekPriceDateArr.reverse();
-            goodPricesDateArr.push(oneWeekPriceDateArr);
-        }
-        goodPricesDateArr = goodPricesDateArr.reverse();
-        setGoodPricesWithDates(goodPricesDateArr);
-        let goodPricesDateArrCopy = [["Week", "BTC"]];
-        for (let i = 0; i < goodPricesDateArr.length; i++) {
-            setGoodPrices(goodPricesDateArrCopy);
-            goodPricesDateArrCopy.push(goodPricesDateArr[i][0]);
-            if (i === goodPricesDateArr.length - 1) {
-                goodPricesDateArrCopy.push(goodPricesDateArr[i][6]);
+            goodPricesDateArr = goodPricesDateArr.reverse();
+            setGoodPricesWithDates(goodPricesDateArr);
+            let goodPricesDateArrCopy = [["Week", "BTC"]];
+            for (let i = 0; i < goodPricesDateArr.length; i++) {
+                setGoodPrices(goodPricesDateArrCopy);
+                goodPricesDateArrCopy.push(goodPricesDateArr[i][0]);
+                if (i === goodPricesDateArr.length - 1) {
+                    goodPricesDateArrCopy.push(goodPricesDateArr[i][6]);
+                }
             }
         }
-    }
-    async function getUserData(data) {
-        console.log(data);
-        let goodData = [["Cryptocurrency", "Arrangement"]];
-        let pnlData = [['Element', 'PNL $ ', { role: 'style' }]];
-        for (let i = 0; i < data.goodsOwned.length; i++) {
-            goodData.push([data.goodsOwned[i], data.goodsArrangement[i]]);
-
-        }
-        let color;
-        let it = formattedDates.length - 31;
-        for (let i = 0; i < 31; i++) {
-            if (data.pnl[i] < 0) {
-                color = "#FE1F00";
+        async function getUserData(data) {
+            console.log(data);
+            let goodData = [["Cryptocurrency", "Arrangement"]];
+            let pnlData = [['Element', 'PNL $ ', { role: 'style' }]];
+            for (let i = 0; i < data.goodsOwned.length; i++) {
+                goodData.push([data.goodsOwned[i], data.goodsArrangement[i]]);
+    
             }
-            else {
-                color = "#32FE00";
+            let color;
+            let it = formattedDates.length - 31;
+            for (let i = 0; i < 31; i++) {
+                if (data.pnl[i] < 0) {
+                    color = "#FE1F00";
+                }
+                else {
+                    color = "#32FE00";
+                }
+                pnlData.push([`${formattedDates[it]}`, data.pnl[i], color]);
+                it++;
+                setPnl(pnlData);
             }
-            pnlData.push([`${formattedDates[it]}`, data.pnl[i], color]);
-            it++;
-            setPnl(pnlData);
+            setGoodsArrangement(goodData);
+            setBalance(data.balance);
+            setProfit(data.totalProfit);
         }
-        setGoodsArrangement(goodData);
-        setBalance(data.balance);
-        setProfit(data.totalProfit);
-    }
+    },[formattedDates]);
+   
     return (
         <main id="dashboard">
             <DashboardNav wallet={wallet} redirect="Wallet"/>
@@ -220,7 +217,7 @@ export default function Dashboard({wallet}) {
                     </OperationBox>
                     <OperationBox>
                         <div id="news-panel">
-                            <img src={newestCryptoArticle.image == 'null' ? newestCryptoArticle.image : newsImage} />
+                            <img src={newestCryptoArticle.image === 'null' ? newestCryptoArticle.image : newsImage} alt="latest article" />
                             <div className="article-literal">
                                 <h1><Link to={newestCryptoArticle.link}>{newestCryptoArticle.title}</Link></h1>
                                 <p>{newestCryptoArticle.description}</p>

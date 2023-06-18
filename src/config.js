@@ -1,2 +1,2 @@
 
-export const fetchURL = "https://client-t6py.onrender.com";
+export const fetchURL = "https://api-service-wc7z.onrender.com";

@@ -1,2 +1,2 @@
 
-export const fetchURL = "http://localhost:4000";
+export const fetchURL = "https://client-t6py.onrender.com";

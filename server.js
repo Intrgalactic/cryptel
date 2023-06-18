@@ -10,7 +10,7 @@ const cors = require('cors');
 const {userData,createUser,deleteUser,findUser} = require('./controllers/usersController.js');
 const {getPrices} = require('./controllers/priceController.js');
 const corsOptions = {
-    origin: "https://client-t6py.onrender.com/",
+    origin: "https://client-t6py.onrender.com",
     optionsSuccessStatus: 200
 }
 dotenv.config();

@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import { useReducer } from "react";
 import { settingsReducer } from "utils/utilities";
-
+import { fetchURL } from "config";
 export default function Settings() {
     const navigate = useNavigate();
     const [userData, setUserData] = useState({
@@ -26,7 +26,7 @@ export default function Settings() {
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                await fetch(`https://cryptel-990b59aa4ff1.herokuapp.com/user?uid=${user.uid}`).then((res) => res.json()).then(data => {
+                await fetch(`${fetchURL}/user?uid=${user.uid}`).then((res) => res.json()).then(data => {
                     setUserData({
                         userEmail: user.email,
                         userName: data.name,
@@ -51,7 +51,7 @@ export default function Settings() {
         )
         reauthenticateWithCredential(auth.currentUser, credentials).then(async (user) => {
             deleteUser(auth.currentUser);
-            const res = await fetch(`https://cryptel-990b59aa4ff1.herokuapp.com/delete-user?uid=${encodeURIComponent(userData.uid)}`);
+            const res = await fetch(`${fetchURL}/delete-user?uid=${encodeURIComponent(userData.uid)}`);
             if (res.ok) {
                 navigate('/');
             }

@@ -8,6 +8,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "firebase.js";
 import { useNavigate } from "react-router-dom";
 import { SignHeader } from "components/sign-header";
+import { fetchURL } from "config";
 
 
 export default function SignUp({isLogged}) {
@@ -59,7 +60,7 @@ export default function SignUp({isLogged}) {
         if (validate()) {
             createUserWithEmailAndPassword(auth, email, password)
                 .then(async (result) => {
-                    const res = await fetch(`https://cryptel-990b59aa4ff1.herokuapp.com/create-user?uid=${result.user.uid}&name=${name}&lastName=${lastName}&dateOfBirth=${date}`);
+                    const res = await fetch(`${fetchURL}/create-user?uid=${result.user.uid}&name=${name}&lastName=${lastName}&dateOfBirth=${date}`);
                     if (res.ok) {
                         navigate('/dashboard');
                     }

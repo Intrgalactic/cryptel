@@ -14,7 +14,7 @@ import { BalanceBox } from "components/balance-box";
 import market from 'assets/images/market.png';
 import { DashboardNav } from "components/dashboard-nav";
 import newsImage from 'assets/images/news-image.jpg';
-
+import { fetchURL } from "config";
 export default function Dashboard({wallet}) {
     const navigate = useNavigate();
     const [goodsArrangement, setGoodsArrangement] = useState([]);
@@ -25,7 +25,7 @@ export default function Dashboard({wallet}) {
     const [newestCryptoArticle, setNewestCryptoArticle] = useState({});
     const [pnl, setPnl] = useState([]);
     const [profit, setProfit] = useState();
-    useMemo(() => { getFormattedDates(formattedDates) });
+    useMemo(() => { getFormattedDates(formattedDates) },[formattedDates]);
 
     const arrangementOptions = {
         colors: ['#FFB200', "#5D60FA", "#16D509", '#6F09D5'],
@@ -85,8 +85,8 @@ export default function Dashboard({wallet}) {
         new Promise(async (resolve, reject) => {
             try {
                 await fetchUrl(`${encodeURI("https://newsdata.io/api/1/news?apikey=pub_246317184937fe6b0f1944b98a708d1a0e08d&q=bitcoin&country=us&language=en&category=business ")}`, getArticle);
-                await fetchUrl("https://cryptel-990b59aa4ff1.herokuapp.com/api/prices", getPrices);
-                await fetchUrl('https://cryptel-990b59aa4ff1.herokuapp.com/api/user-data', getUserData);
+                await fetchUrl(`${fetchURL}/api/prices`, getPrices);
+                await fetchUrl(`${fetchURL}/api/user-data`, getUserData);
             }
             catch (err) {
                 console.log('failed to fetch');

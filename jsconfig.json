@@ -3,9 +3,8 @@
       "baseUrl": "src",
       "paths": {
         "components/*": ["src/components/*"],
-        "assets/*": ["src/assets/*"],
-        "build/*" : ["./build/*"]
+        "assets/*": ["src/assets/*"]
       }
     },
-    "exclude": ["node_modules","build"] 
+    "exclude": ["node_modules"]
   }

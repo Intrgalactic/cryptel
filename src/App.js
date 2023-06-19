@@ -65,7 +65,7 @@ function App() {
       window.ethereum?.removeListener('accountsChanged', refreshAccounts);
       window.ethereum?.removeListener("chainChanged", refreshChain);
     }
-  },[])
+  })
   return (
     <Routes>
       <Route path='/' element={<Home isProviderAvailable={isProviderAvailable} wallet={wallet} isLogged={isLogged} connectWallet={connectWallet} setWallet={setWallet}/>} exact />
